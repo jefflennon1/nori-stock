@@ -10,7 +10,7 @@ INSERT INTO users (id, name, username, email, password, role) VALUES
      'Nori Admin',
      'nori_admin',
      'admin@nori-stock.com',
-     '$2a$10$REPLACE_WITH_REAL_BCRYPT_HASH_ADMIN1234_____________',
+     '$2a$12$GSCy9hV56oJNOv83YuTw..MnGTEeK1uWJSu3Scx1BfLSvGMSo0Etu',
      'ADMIN');
 
 -- Demo operator user (password: demo1234)
@@ -19,7 +19,7 @@ INSERT INTO users (id, name, username, email, password, role) VALUES
      'Demo Operator',
      'operator_demo',
      'operator@demo.com',
-     '$2a$10$REPLACE_WITH_REAL_BCRYPT_HASH_DEMO1234______________',
+     '$2a$12$0RrIP7/gGK7HzO18Vw.N8OdWwTaHRYpurzCccP8/CdNASb6p0bO.y',
      'OPERATOR');
 
 -- Categories

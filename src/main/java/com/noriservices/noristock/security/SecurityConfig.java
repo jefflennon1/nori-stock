@@ -2,7 +2,6 @@ package com.noriservices.noristock.security;
 
 
 import com.noriservices.noristock.security.filter.JwtAuthenticationFilter;
-import com.noriservices.noristock.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -38,4 +38,8 @@ public class UserService {
         repository.save(user);
         return new UserConverter().convertToResponseUserDTO(user);
     }
+
+    public User getSystemUser(){
+        return (User) repository.findByUsername("system");
+    }
 }

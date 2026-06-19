@@ -3,6 +3,7 @@ package com.noriservices.noristock.service;
 
 import com.noriservices.noristock.model.ProductModel;
 import com.noriservices.noristock.repository.ProductRepository;
+import com.noriservices.noristock.repository.StockMovementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ public class ProductService {
         return repository.findById(id).orElseThrow();
     }
 
-    public ProductModel save(ProductModel entity){
-        return repository.save(entity);
+    public void save(ProductModel entity){
+        repository.save(entity);
     }
+
 }

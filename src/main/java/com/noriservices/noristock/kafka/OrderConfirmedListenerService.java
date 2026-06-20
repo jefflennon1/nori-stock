@@ -11,6 +11,7 @@ import com.noriservices.noristock.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderConfirmedListenerService  {
@@ -24,6 +25,7 @@ public class OrderConfirmedListenerService  {
     @Autowired
     private UserService userService;
 
+    @Transactional
     @KafkaListener(topics = "order-confirmed")
     public void processOrderConfirmed(OrderConfirmedEventDTO event){
         if(stockMovementService.isStockMovementPresent(event.orderId())){

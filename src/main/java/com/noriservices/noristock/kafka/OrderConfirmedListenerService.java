@@ -25,6 +25,9 @@ public class OrderConfirmedListenerService  {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StockUpdatedProducerService stockUpdatedProducerService;
+
     @Transactional
     @KafkaListener(topics = "order-confirmed")
     public void processOrderConfirmed(OrderConfirmedEventDTO event){
@@ -34,8 +37,13 @@ public class OrderConfirmedListenerService  {
 
          for(OrderItemEventDTO item : event.items()){
               ProductModel product = productService.findById(item.productId());
-              product.setQuantity(product.getQuantity() - item.quantity());
+              product.setQuantity(Math.subtractExact(product.getQuantity(), item.quantity()));
               productService.save(product);
+
+
+             OrderItemEventDTO orderItemEventDTO = new OrderItemEventDTO(product.getId(), product.getQuantity());
+             stockUpdatedProducerService.publishInventoryUpdated(orderItemEventDTO);
+
 
              StockMovementModel movement = new StockMovementModel();
              movement.setProduct(product);

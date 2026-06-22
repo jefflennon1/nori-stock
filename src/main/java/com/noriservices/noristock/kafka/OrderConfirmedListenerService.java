@@ -1,5 +1,6 @@
 package com.noriservices.noristock.kafka;
 
+import com.noriservices.noristock.exception.InsufficientStockException;
 import com.noriservices.noristock.kafka.dto.OrderConfirmedEventDTO;
 import com.noriservices.noristock.kafka.dto.OrderItemEventDTO;
 import com.noriservices.noristock.model.MovementType;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class OrderConfirmedListenerService  {
@@ -35,15 +39,16 @@ public class OrderConfirmedListenerService  {
             return;
         }
 
+        List<ProductModel> productsForEventPublishing = new ArrayList<>();
+
          for(OrderItemEventDTO item : event.items()){
               ProductModel product = productService.findById(item.productId());
+              if(item.quantity() > product.getQuantity()) throw new InsufficientStockException("The inventory for product is insufficient: "+ product.getName());
+
               product.setQuantity(Math.subtractExact(product.getQuantity(), item.quantity()));
               productService.save(product);
 
-
-             OrderItemEventDTO orderItemEventDTO = new OrderItemEventDTO(product.getId(), product.getQuantity());
-             stockUpdatedProducerService.publishInventoryUpdated(orderItemEventDTO);
-
+             productsForEventPublishing.add(product);
 
              StockMovementModel movement = new StockMovementModel();
              movement.setProduct(product);
@@ -56,5 +61,15 @@ public class OrderConfirmedListenerService  {
 
              stockMovementService.save(movement);
          }
+
+
+        publishingStockUpdateEvent(productsForEventPublishing);
+    }
+
+    private void publishingStockUpdateEvent(List<ProductModel> productsForEventPublishing) {
+        for(ProductModel productPublishing: productsForEventPublishing){
+            OrderItemEventDTO orderItemEventDTO = new OrderItemEventDTO(productPublishing.getId(), productPublishing.getQuantity());
+            stockUpdatedProducerService.publishInventoryUpdated(orderItemEventDTO);
+        }
     }
 }

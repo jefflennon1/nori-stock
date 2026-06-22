@@ -4,6 +4,8 @@ import com.noriservices.noristock.model.DTO.NewUserDTO;
 import com.noriservices.noristock.model.DTO.ResponseUserDTO;
 import com.noriservices.noristock.model.DTO.loginDTO;
 import com.noriservices.noristock.model.DTO.TokenDTO;
+import com.noriservices.noristock.model.User;
+import com.noriservices.noristock.model.UserRole;
 import com.noriservices.noristock.service.JwtService;
 import com.noriservices.noristock.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,10 @@ public class AuthController {
         if(!userExists) return ResponseEntity.badRequest().build();
 
         var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
+        User user =  (User) authentication.getPrincipal();
+        if(UserRole.SYSTEM.equals(user.getRole())){
+            return ResponseEntity.badRequest().build();
+        }
         String token = jwtService.generateToken((UserDetails) Objects.requireNonNull(authentication.getPrincipal()));
         return ResponseEntity.ok().body(new TokenDTO(token));
     }
